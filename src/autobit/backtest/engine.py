@@ -1,5 +1,7 @@
 """Event-driven Backtrader adapter for enriched four-hour data."""
 
+from collections.abc import Mapping
+from types import MappingProxyType
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 import math
@@ -11,6 +13,7 @@ from autobit.config import CostConfig, RiskConfig, StrategyConfig
 from autobit.domain.models import OrderStatus
 from autobit.execution.backtest_broker import EventBacktestBroker, OneShotFractionalFiller
 from autobit.risk.breakers import RiskDecision
+from autobit.risk.multifactor import FactorSnapshot, Variant, apply_overlay
 from autobit.core.engine import StrategyEngine, forced_exit_reason
 from autobit.core.models import DecisionInput, PositionContext
 from autobit.core.risk_state import RiskState, RiskObservation, ClosedTradeObservation, advance_risk_state
@@ -27,7 +30,11 @@ class BacktestConfig:
     exit_fill_fraction: float = field(default=1.0, kw_only=True)
     force_liquidate_at_end: bool = field(default=False, kw_only=True)
 
+    overlay_variant: Variant = field(default=Variant.A, kw_only=True)
+
     def __post_init__(self) -> None:
+        if not isinstance(self.overlay_variant, Variant):
+            raise ValueError("overlay_variant must be a Variant")
         try:
             initial_equity = float(self.initial_equity)
         except (TypeError, ValueError, OverflowError) as error:
@@ -127,7 +134,7 @@ class EnrichedPandasData(bt.feeds.PandasData):
 
 
 class _DonchianBacktestStrategy(bt.Strategy):
-    params = (("adapter_config", None), ("reference_opens", None))
+    params = (("adapter_config", None), ("reference_opens", None), ("research_factors", None))
 
     def __init__(self) -> None:
         self.adapter_config: BacktestConfig = self.p.adapter_config
@@ -178,6 +185,12 @@ class _DonchianBacktestStrategy(bt.Strategy):
             self._evaluate_current_risk(now, equity)
             return
         risk_decision = self._evaluate_current_risk(now, equity)
+        if self.adapter_config.overlay_variant is not Variant.A:
+            # Feed labels are candle OPEN times; decisions use the completed close.
+            decision_at = now + timedelta(hours=4)
+            factors = (self.p.research_factors or {}).get(decision_at)
+            risk_decision = apply_overlay(risk_decision, self.adapter_config.overlay_variant,
+                                          factors, now=decision_at).risk
 
         if self._entry_partial_pending:
             self._cancel_entry_remainder()
@@ -677,7 +690,8 @@ class _DonchianBacktestStrategy(bt.Strategy):
         return len(self.data) >= self.data.buflen()
 
 
-def run_backtest(frame: pd.DataFrame, config: BacktestConfig = BacktestConfig()) -> BacktestResult:
+def run_backtest(frame: pd.DataFrame, config: BacktestConfig = BacktestConfig(), *,
+                 research_factors: Mapping[datetime, FactorSnapshot] | None = None) -> BacktestResult:
     prepared = _prepare_frame(frame, config.strategy)
     cerebro = bt.Cerebro(cheat_on_open=False, stdstats=False)
     broker = EventBacktestBroker()
@@ -702,6 +716,7 @@ def run_backtest(frame: pd.DataFrame, config: BacktestConfig = BacktestConfig())
         _DonchianBacktestStrategy,
         adapter_config=config,
         reference_opens=reference_opens,
+        research_factors=MappingProxyType(dict(research_factors or {})),
     )
     strategy = cerebro.run()[0]
     final_equity = (

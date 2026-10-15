@@ -2,6 +2,7 @@
 
 현재 전략을 보존하고, 제한된 변경 후보를 동일한 조건으로 비교합니다. 연구 결과는 실제 수익이나 실전 전환의 승인이 아닙니다.
 
+- [BTC Multi-Factor Risk Overlay v1.2 — 구현 및 검증, 데이터 추가 필요](multifactor-v1.2.md)
 - [이번 결과 브리핑과 채택 판단](R20260908-results.md)
 - [기준 전략 v1](baseline-v1.md) / [상세 거래 118회](baseline-v1-trades.md)
 - [후보: 추적 간격 4ATR](candidate-trail-4atr.md) — 개선 가능성, 채택 보류
