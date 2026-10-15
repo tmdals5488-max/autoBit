@@ -7,3 +7,4 @@ data/processed/
 reports/
 *.sqlite3
 *.tmp
+data/paper/
