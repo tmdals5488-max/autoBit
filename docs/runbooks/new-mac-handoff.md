@@ -1,24 +1,24 @@
 # 새 Mac에서 작업 이어가기
 
-이 문서는 2026-10-16 현재 Mac에서 새 Mac으로 개발 장소를 옮기기 위한 인계 기록이다. 원격 저장소는 `https://github.com/seungminbluebox/autoBit.git`, 작업 브랜치는 `codex/multifactor-risk-overlay-v1-2`다. 실제 업비트 주문은 잠겨 있다.
+이 문서는 2026-10-16 현재 Mac에서 새 Mac으로 개발 장소를 옮기기 위한 인계 기록이다. 작업 저장소는 `https://github.com/tmdals5488-max/autoBit.git`, 작업 브랜치는 `codex/multifactor-risk-overlay-v1-2`다. 원본 저장소는 `https://github.com/seungminbluebox/autoBit.git`이며 현재 로그인 계정에는 읽기 권한만 있다. 실제 업비트 주문은 잠겨 있다.
 
 ## 새 Mac에서 시작
 
-2026-10-16 현재 GitHub 업로드는 거절됐다. 현재 Mac의 GitHub 인증 계정 `tmdals5488-max` 토큰이 유효하지 않고, 저장소 push는 HTTP 403을 반환했다. 따라서 GitHub의 작업 브랜치가 실제로 보일 때까지 아래 GitHub 절차를 사용하지 않는다. 현재 Mac에 검증한 전체 Git bundle을 만들어 두었으며, 이 파일을 AirDrop 또는 USB로 새 Mac에 옮기는 것이 바로 사용 가능한 경로다.
+2026-10-16 현재 `tmdals5488-max` 계정의 인증을 갱신했지만 원본 `seungminbluebox/autoBit` 저장소에 대한 권한은 `READ`라서 업로드가 HTTP 403으로 거절됐다. 로그인한 계정에 공개 포크를 만들고 이 작업 브랜치를 업로드했다. 아래 GitHub 절차를 우선 사용한다.
 
-### GitHub 권한을 복구한 뒤
+### GitHub에서 바로 받기
 
-1. GitHub에서 `seungminbluebox/autoBit` 저장소에 접근할 수 있는 계정으로 로그인한다.
-2. GitHub에 `codex/multifactor-risk-overlay-v1-2` 브랜치가 올라온 것이 확인되면, 새 Mac의 터미널에서 원하는 작업 폴더에 저장소를 복제하고 작업 브랜치를 체크아웃한다.
+1. GitHub에서 `tmdals5488-max` 계정으로 로그인한다.
+2. 새 Mac의 터미널에서 원하는 작업 폴더에 포크를 복제하고 작업 브랜치를 체크아웃한다.
 
    ```sh
-   git clone https://github.com/seungminbluebox/autoBit.git
+   git clone https://github.com/tmdals5488-max/autoBit.git
    cd autoBit
    git switch --track origin/codex/multifactor-risk-overlay-v1-2
    git status --short
    ```
 
-### 현재 바로 가능한 파일 이동
+### GitHub 접속이 안 될 때 파일 이동
 
 1. 현재 Mac의 `자동 트레이딩/autoBit-new-mac-20261016.bundle` 파일을 새 Mac의 `Downloads` 폴더로 옮긴다. Git 이력과 현재 작업 브랜치를 담은 파일이며 모의 원장과 계정 키는 담지 않는다.
 2. 새 Mac의 터미널에서 다음을 실행한다.
@@ -27,7 +27,7 @@
    cd ~/Documents
    git clone -b codex/multifactor-risk-overlay-v1-2 ~/Downloads/autoBit-new-mac-20261016.bundle autoBit
    cd autoBit
-   git remote set-url origin https://github.com/seungminbluebox/autoBit.git
+   git remote set-url origin https://github.com/tmdals5488-max/autoBit.git
    git status --short
    ```
 
