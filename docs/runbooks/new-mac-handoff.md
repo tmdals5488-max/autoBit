@@ -4,13 +4,30 @@
 
 ## 새 Mac에서 시작
 
+2026-10-16 현재 GitHub 업로드는 거절됐다. 현재 Mac의 GitHub 인증 계정 `tmdals5488-max` 토큰이 유효하지 않고, 저장소 push는 HTTP 403을 반환했다. 따라서 GitHub의 작업 브랜치가 실제로 보일 때까지 아래 GitHub 절차를 사용하지 않는다. 현재 Mac에 검증한 전체 Git bundle을 만들어 두었으며, 이 파일을 AirDrop 또는 USB로 새 Mac에 옮기는 것이 바로 사용 가능한 경로다.
+
+### GitHub 권한을 복구한 뒤
+
 1. GitHub에서 `seungminbluebox/autoBit` 저장소에 접근할 수 있는 계정으로 로그인한다.
-2. 새 Mac의 터미널에서 원하는 작업 폴더에 저장소를 복제하고 작업 브랜치를 체크아웃한다.
+2. GitHub에 `codex/multifactor-risk-overlay-v1-2` 브랜치가 올라온 것이 확인되면, 새 Mac의 터미널에서 원하는 작업 폴더에 저장소를 복제하고 작업 브랜치를 체크아웃한다.
 
    ```sh
    git clone https://github.com/seungminbluebox/autoBit.git
    cd autoBit
    git switch --track origin/codex/multifactor-risk-overlay-v1-2
+   git status --short
+   ```
+
+### 현재 바로 가능한 파일 이동
+
+1. 현재 Mac의 `자동 트레이딩/autoBit-new-mac-20261016.bundle` 파일을 새 Mac의 `Downloads` 폴더로 옮긴다. Git 이력과 현재 작업 브랜치를 담은 파일이며 모의 원장과 계정 키는 담지 않는다.
+2. 새 Mac의 터미널에서 다음을 실행한다.
+
+   ```sh
+   cd ~/Documents
+   git clone -b codex/multifactor-risk-overlay-v1-2 ~/Downloads/autoBit-new-mac-20261016.bundle autoBit
+   cd autoBit
+   git remote set-url origin https://github.com/seungminbluebox/autoBit.git
    git status --short
    ```
 
